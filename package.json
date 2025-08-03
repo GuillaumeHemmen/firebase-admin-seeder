@@ -10,7 +10,7 @@
   "scripts": {
     "build": "tsc",
     "lint": "eslint . --ext .ts",
-    "test": "jest",
+    "test": "TZ=UTC jest --coverage --updateSnapshot --maxWorkers=75%",
     "prepare": "npm run build && npm run lint && npm test"
   },
   "keywords": [

@@ -21,22 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import path from 'path';
-const serviceAccountPath = path.resolve(process.cwd(), 'service-account.json');
-// Mock service-account.json import to prevent load errors
-jest.mock(serviceAccountPath, () => ({}), { virtual: true });
-
-import * as admin from 'firebase-admin';
-import { seedAdmin } from '../src/seedAdmin';
-
-type AuthMock = { setCustomUserClaims: jest.Mock<Promise<void>, [string, object]> };
-
-// Mock firebase-admin
 jest.mock('firebase-admin', () => {
     const apps: any[] = [];
     const initializeApp = jest.fn(() => apps.push({}));
     const credential = { cert: jest.fn() };
-    const authMock: AuthMock = {
+    const authMock = {
         setCustomUserClaims: jest.fn<Promise<void>, [string, object]>((uid, claims) => Promise.resolve()),
     };
     return {
@@ -47,13 +36,36 @@ jest.mock('firebase-admin', () => {
     };
 });
 
+// Mock service-account.json import to prevent load errors
+jest.mock('../service-account.json', () => ({}), { virtual: true });
+
+import path from 'path';
+import * as admin from 'firebase-admin';
+import { seedAdmin } from '../src/seedAdmin';
+
+type AuthMock = { setCustomUserClaims: jest.Mock<Promise<void>, [string, object]> };
+
 describe('seedAdmin', () => {
     const uid = 'test-uid';
+
+    beforeEach(() => {
+        // Clear all mocks before each test
+        jest.clearAllMocks();
+    });
+
     it('sets custom claims and logs success', async () => {
         console.log = jest.fn();
         await seedAdmin(uid);
         const authMock = admin.auth() as unknown as AuthMock;
         expect(authMock.setCustomUserClaims).toHaveBeenCalledWith(uid, { roles: ['admin'] });
         expect(console.log).toHaveBeenCalledWith(`✅ ${uid} is now an admin.`);
+    });
+
+    it('handles errors when setting custom claims fails', async () => {
+        const error = new Error('Failed to set custom claims');
+        const authMock = admin.auth() as unknown as AuthMock;
+        authMock.setCustomUserClaims.mockRejectedValueOnce(error);
+
+        await expect(seedAdmin(uid)).rejects.toThrow('Failed to set custom claims');
     });
 });

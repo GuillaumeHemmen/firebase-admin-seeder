@@ -1,3 +1,32 @@
+# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+
+# dependencies
 node_modules/
 dist/
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env*.local
+
+# typescript
+*.tsbuildinfo
+
+# ignore .firebase folder
+*.cache
+
+# sonar
+.scannerwork
+
+# jest reporter
+/coverage/
+
+# Firebase's service-account.json
 service-account.json
