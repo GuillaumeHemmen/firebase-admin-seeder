@@ -23,16 +23,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import path from 'path';
-import { seedAdmin } from '../src/seedAdmin';
+import { seedAdmin } from '../src/seedAdmin.js';
 
-const [,, uid] = process.argv;
-if (!uid) {
-    console.error('Usage: seed-admin <USER_UID>');
-    process.exit(1);
+async function main(): Promise<void> {
+    const [, , uid] = process.argv;
+    if (!uid) {
+        throw new Error('Usage: seed-admin <USER_UID>');
+    }
+
+    await seedAdmin(uid);
 }
 
-seedAdmin(uid).catch(err => {
-    console.error(err);
-    process.exit(1);
+main().catch((err) => {
+    process.stderr.write(`${err}\n`);
+    // Signal failure without forcefully aborting the event loop.
+    process.exitCode = 1;
 });

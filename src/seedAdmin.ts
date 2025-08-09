@@ -27,9 +27,10 @@ import path from 'path';
 function initAdmin(): void {
     if (!admin.apps.length) {
         const serviceAccountPath = path.resolve(process.cwd(), 'service-account.json');
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-unsafe-assignment,no-undef
         const serviceAccount = require(serviceAccountPath);
         admin.initializeApp({
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             credential: admin.credential.cert(serviceAccount),
         });
     }
@@ -38,5 +39,5 @@ function initAdmin(): void {
 export async function seedAdmin(uid: string): Promise<void> {
     initAdmin();
     await admin.auth().setCustomUserClaims(uid, { roles: ['admin'] });
-    console.log(`✅ ${uid} is now an admin.`);
+    process.stdout.write(`✅ ${uid} is now an admin.`);
 }

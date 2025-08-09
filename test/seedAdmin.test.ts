@@ -22,16 +22,18 @@
  * SOFTWARE.
  */
 jest.mock('firebase-admin', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const apps: any[] = [];
     const initializeApp = jest.fn(() => apps.push({}));
     const credential = { cert: jest.fn() };
     const authMock = {
-        setCustomUserClaims: jest.fn<Promise<void>, [string, object]>((uid, claims) => Promise.resolve()),
+        setCustomUserClaims: jest.fn<Promise<void>, [string, object]>(() => Promise.resolve()),
     };
     return {
         apps,
         initializeApp,
         credential,
+        // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
         auth: () => authMock,
     };
 });
@@ -39,9 +41,8 @@ jest.mock('firebase-admin', () => {
 // Mock service-account.json import to prevent load errors
 jest.mock('../service-account.json', () => ({}), { virtual: true });
 
-import path from 'path';
 import * as admin from 'firebase-admin';
-import { seedAdmin } from '../src/seedAdmin';
+import { seedAdmin } from '../src/seedAdmin.js';
 
 type AuthMock = { setCustomUserClaims: jest.Mock<Promise<void>, [string, object]> };
 
@@ -54,11 +55,13 @@ describe('seedAdmin', () => {
     });
 
     it('sets custom claims and logs success', async () => {
-        console.log = jest.fn();
+        const writeSpy = jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
         await seedAdmin(uid);
         const authMock = admin.auth() as unknown as AuthMock;
         expect(authMock.setCustomUserClaims).toHaveBeenCalledWith(uid, { roles: ['admin'] });
-        expect(console.log).toHaveBeenCalledWith(`✅ ${uid} is now an admin.`);
+        expect(writeSpy).toHaveBeenCalledWith(`✅ ${uid} is now an admin.`);
+
+        writeSpy.mockRestore();
     });
 
     it('handles errors when setting custom claims fails', async () => {
