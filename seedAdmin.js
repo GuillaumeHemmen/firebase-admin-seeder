@@ -21,23 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as admin from 'firebase-admin';
-import path from 'path';
+const admin = require('firebase-admin');
+const serviceAccount = require('./service-account.json'); // download from Firebase Console
 
-function initAdmin(): void {
-    if (!admin.apps.length) {
-        const serviceAccountPath = path.resolve(process.cwd(), 'service-account.json');
-        // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-unsafe-assignment,no-undef
-        const serviceAccount = require(serviceAccountPath);
-        admin.initializeApp({
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            credential: admin.credential.cert(serviceAccount),
-        });
-    }
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
+
+async function seedAdmin(uid) {
+  // Set a customClaim “roles” to be an array
+  await admin.auth().setCustomUserClaims(uid, { roles: ['admin'] });
+  console.log(`✅ ${uid} is now an admin.`);
+  process.exit(0);
 }
 
-export async function seedAdmin(uid: string): Promise<void> {
-    initAdmin();
-    await admin.auth().setCustomUserClaims(uid, { roles: ['admin'] });
-    process.stdout.write(`✅ ${uid} is now an admin.`);
+const [,, uid] = process.argv;
+if (!uid) {
+  console.error('Usage: node seedAdmin.js <USER_UID>');
+  process.exit(1);
 }
+
+seedAdmin(uid).catch(console.error);
+

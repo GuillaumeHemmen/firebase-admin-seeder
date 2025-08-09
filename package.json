@@ -1,40 +1,8 @@
 {
-  "name": "firebase-admin-seeder",
-  "version": "1.0.0",
-  "description": "CLI for seeding Firebase users with admin role via custom claims",
-  "main": "dist/src/seedAdmin.js",
-  "types": "dist/src/seedAdmin.d.ts",
-  "bin": {
-    "seed-admin": "dist/bin/seed-admin.js"
-  },
-  "type": "module",
   "scripts": {
-    "build": "tsc",
-    "lint": "eslint ./bin ./src ./test --ext .ts",
-    "test": "TZ=UTC jest --coverage --updateSnapshot --maxWorkers=75%"
+    "bootstrap": "node ./seedAdmin.js"
   },
-  "keywords": [
-    "firebase",
-    "admin",
-    "cli",
-    "seed",
-    "custom-claims"
-  ],
-  "author": "Guillaume Van Hemmen <guillaume [at] van [dash] hemmen.com",
-  "license": "MIT",
   "dependencies": {
-    "firebase-admin": "^11.0.0"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.32.0",
-    "@types/jest": "^29.0.0",
-    "@types/node": "^18.0.0",
-    "@typescript-eslint/eslint-plugin": "^8.38.0",
-    "@typescript-eslint/parser": "^8.38.0",
-    "eslint": "^9.32.0",
-    "jest": "^29.0.0",
-    "jest-sonar-reporter": "^2.0.0",
-    "ts-jest": "^29.0.0",
-    "typescript": "^5.0.0"
+    "firebase-admin": "^13.4.0"
   }
 }
