@@ -27,6 +27,7 @@ yarn-error.*
 
 # jest reporter
 /coverage/
+test-report.xml
 
 # Firebase's service-account.json
 service-account.json

@@ -3,6 +3,7 @@ export default {
   // Use the ESM preset for ts-jest
   preset: 'ts-jest/presets/default-esm',
 
+  testResultsProcessor: "jest-sonar-reporter",
   testEnvironment: 'node',
   roots: ['<rootDir>/test'],
   testRegex: '(/__tests__/.*|\\.test)\\.ts$',
